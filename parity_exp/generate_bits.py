@@ -36,12 +36,14 @@ def generate_bits_old():
 
 def bits_prepared():
     bits, results = generate_bits()
-    print(np.array(results))
     return np.array(bits), np.array(results)
 
 
 def correct_bit_percentage(labels, results):
-    print(results)
     prediction = np.round(results)
     correct = sum(prediction == labels)
     return correct / results.shape
+
+def load_bits():
+    with open("bits.txt", "r") as f:
+        return f.readlines()

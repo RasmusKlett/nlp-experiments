@@ -1,10 +1,13 @@
 import tensorflow as tf
+import itertools
 import numpy as np
+
 from batcher import Batcher
 from generate_bits import bits_prepared
 
 # Data loading
 X_full, Y_full = bits_prepared()
+
 random_order = np.random.permutation(X_full.shape[0])
 
 X_train, X_test = np.split(
@@ -12,6 +15,29 @@ X_train, X_test = np.split(
 
 Y_train, Y_test = np.split(
         np.take(Y_full, random_order, axis=0, out=Y_full), 2)
+
+
+# Perform oversampling of False datapoints
+falses = X_train[Y_train == False]
+count_false = len(falses)
+count_true = len(Y_train[Y_train == True])
+
+extra_count = count_true - count_false
+extras = []
+
+for i in range(extra_count):
+    extras.append(X_train[i, :])
+
+extras = np.array(extras)
+
+
+# Add replicated data to training set
+X_train = np.concatenate((X_train, extras), axis=0)
+Y_train = np.concatenate((Y_train, list(itertools.repeat(False, extra_count))), axis=0)
+
+random_order_train = np.random.permutation(X_train.shape[0])
+X_train = np.take(X_train, random_order_train, axis=0, out=X_train)
+Y_train = np.take(Y_train, random_order_train, axis=0, out=Y_train)
 
 print("Y train trues:", sum(Y_train))
 print("Y test trues:", sum(Y_test))
@@ -41,7 +67,7 @@ with tf.name_scope("layer1") as scope:
 with tf.name_scope("layer2") as scope:
     W2 = tf.get_variable("weights2", [hidden_sz, 1])
     B2 = tf.get_variable("bias2", [1])
-    out_2 = tf.nn.sigmoid(tf.matmul(out_1, W2))
+    out_2 = tf.nn.sigmoid(tf.matmul(out_1, W2) + B2)
 
 
 loss = tf.sqrt(tf.reduce_mean(tf.squared_difference(Y, out_2), name='mean_squared_error'))
