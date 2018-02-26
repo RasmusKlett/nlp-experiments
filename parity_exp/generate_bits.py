@@ -26,11 +26,6 @@ def generate_bits_old():
         bits.append(
             list("1" if b else "0" for b in chain(bits, [task1(bits)]))
         )
-        # strings.append(
-            # "".join("1" if b else "0" for b in chain(bits, [task1(bits)])) + "\n"
-        # )
-
-    # result = "".join(strings)
 
     return (bits, results)
 
