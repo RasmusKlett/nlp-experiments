@@ -1,13 +1,17 @@
 import numpy as np
 import tensorflow as tf
 import itertools
+import math
 
 from generate_bits import bits_prepared
-from graph import X, Y, W1, W2, B1, B2, out_1, out_2, merged, loss, train_step
+from graph import X, Y, W1, W2, B1, B2, out_1, out_2, merged, loss, train_step, correct, predictions
+from graph import *
+from batcher import Batcher
 
 
 # Constants
-max_iter = 50000
+max_iter = 200000
+batch_size = 32
 
 
 # Data loading
@@ -65,10 +69,10 @@ sess = tf.Session()
 
 sess.run(tf.global_variables_initializer())
 
-# batcher = Batcher(X_train, Y_train, batch_size)
-# x_batch, y_batch = batcher.nextBatch()
-x_batch = X_train  # Currently no batching
-y_batch = Y_train
+batcher = Batcher(X_train, Y_train, batch_size)
+x_batch, y_batch = batcher.nextBatch()
+# x_batch = X_train  # Currently no batching
+# y_batch = Y_train
 
 writer = tf.summary.FileWriter("/tmp/log/parity/train", sess.graph)
 
@@ -76,7 +80,7 @@ test_writer = tf.summary.FileWriter("/tmp/log/parity/test", sess.graph)
 
 for i in range(max_iter):
     summary, model_loss, _, debug = sess.run(
-        [merged, loss, train_step, out_2],
+        [merged, loss, train_step, correct1],
         {
           X: x_batch,
           Y: y_batch,
@@ -86,9 +90,8 @@ for i in range(max_iter):
     test_summary = sess.run(merged, {X: X_test, Y: Y_test})
     test_writer.add_summary(test_summary, i)
 
-    if i % 100 == 0:
-        print("Iteration %i    train loss: %.10f  " % (i, model_loss), end="")
-        print(np.linalg.norm(debug - y_mean))
+    if i % 20 == 0:
+        print("Iteration %i    train loss: %.3E  " % (i, model_loss))
 
 writer.close()
 test_writer.close()

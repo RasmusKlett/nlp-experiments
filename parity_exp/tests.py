@@ -16,6 +16,9 @@ def test_variables_changing():
         }
     )
     after = sess.run(tf.trainable_variables())
+
+    assert(len(before) == 4)
+    assert(len(after) == 4)
     for b, a in zip(before, after):
         assert (b != a).any()
     print("Success")

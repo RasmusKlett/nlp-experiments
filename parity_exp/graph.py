@@ -1,12 +1,11 @@
 import tensorflow as tf
-# import numpy as np
+import numpy as np
 
 
 # Constants
 in_dim = 8
-learning_rate = 0.0001
+learning_rate = 0.001
 hidden_sz = 100
-batch_size = 32
 
 
 # ======================
@@ -29,27 +28,25 @@ with tf.name_scope("layer2") as scope:
     out_2 = tf.nn.relu(tf.matmul(out_1, W2) + B2)
 
 
-loss = tf.sqrt(
-    tf.reduce_mean(tf.squared_difference(Y, out_2)),
-    name='root_mean_squared_error')
-# loss = tf.reduce_mean(
-    # tf.squared_difference(Y, out_2),
-    # name='mean_squared_error')
+loss = tf.losses.mean_squared_error(Y, tf.reshape(out_2, [-1]))
 tf.summary.scalar("loss", loss)
 
 
 with tf.name_scope("correct-percent") as scope:
-    # predictions = tf.round(tf.Print(out_2, [out_2]))
-    predictions = tf.round(out_2)
-    # correct = tf.count_nonzero(predictions == Y)
-    correct = tf.reduce_sum(predictions)
-    print(correct)
+    predictions = tf.reshape(tf.round(out_2), [-1])
+    # print(predictions)
+    # print(Y)
+    correct1 = tf.equal(predictions, Y)
+    print(correct1)
+    correct = tf.to_float(tf.count_nonzero(correct1)) / tf.to_float(tf.shape(out_2)[0])
+    # tf.Print(None, (predictions == Y).shape)
+    # correct = tf.reduce_sum(predictions)
 tf.summary.scalar("correct", correct)
 
 
 # optimizer = tf.train.AdamOptimizer(learning_rate)
 # optimizer = tf.train.MomentumOptimizer(learning_rate, momentum=0.9)
-optimizer = tf.train.GradientDescentOptimizer(0.1)
+optimizer = tf.train.GradientDescentOptimizer(0.01)
 train_step = optimizer.minimize(loss)
 
 merged = tf.summary.merge_all()
