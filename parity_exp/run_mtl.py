@@ -100,7 +100,7 @@ for i in range(max_iter):
     test_writer.add_summary(test_summary, i)
 
     if i % print_interval == 0:
-        print("Iteration %i    train loss: %.3E  " % (i, model_loss))
+        print("Iteration %i    train loss: %.5E  " % (i, model_loss))
 
 writer.close()
 test_writer.close()

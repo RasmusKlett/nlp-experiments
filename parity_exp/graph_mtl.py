@@ -47,11 +47,35 @@ with tf.name_scope("layer_t2") as scope:
     Bt2 = tf.get_variable("bias_t2", [1])
     out_t2 = tf.nn.relu(tf.matmul(out_1, Wt2) + Bt2)
 
+
+with tf.name_scope("layer_t3") as scope:
+    Wt3 = tf.get_variable(
+        "weights_t3", [hidden_sz, 1],
+        # initializer=tf.zeros_initializer
+    )
+
+    Bt3 = tf.get_variable("bias_t3", [1])
+    out_t3 = tf.nn.relu(tf.matmul(out_1, Wt3) + Bt3)
+
+with tf.name_scope("layer_t4") as scope:
+    Wt4 = tf.get_variable(
+        "weights_t4", [hidden_sz, 1],
+        # initializer=tf.zeros_initializer
+    )
+
+    Bt4 = tf.get_variable("bias_t4", [1])
+    out_t4 = tf.nn.relu(tf.matmul(out_1, Wt4) + Bt4)
+
 loss_t1 = tf.losses.mean_squared_error(Y1, tf.reshape(out_t1, [-1]))
 loss_t2 = tf.losses.mean_squared_error(Y2, tf.reshape(out_t2, [-1]))
-loss = loss_t1 + loss_t2
+loss_t3 = tf.losses.mean_squared_error(Y3, tf.reshape(out_t3, [-1]))
+loss_t4 = tf.losses.mean_squared_error(Y4, tf.reshape(out_t4, [-1]))
+
+loss = loss_t1 + loss_t2 + loss_t3 + loss_t4
 tf.summary.scalar("loss_t1", loss_t1)
 tf.summary.scalar("loss_t2", loss_t2)
+tf.summary.scalar("loss_t3", loss_t3)
+tf.summary.scalar("loss_t4", loss_t4)
 tf.summary.scalar("loss", loss)
 
 
