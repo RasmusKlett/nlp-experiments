@@ -1,4 +1,6 @@
 # Created by https://www.gitignore.io/api/vim,latex,linux,python,jupyternotebook
+wiki.*
+derived-dict
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
